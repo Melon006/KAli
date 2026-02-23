@@ -1,0 +1,11 @@
+```txt
+PyQt6>=6.4.0
+qterminal>=0.1.0
+paramiko>=3.0.0
+python-nmap>=0.7.1
+scapy>=2.5.0
+requests>=2.28.0
+cryptography>=40.0.0
+reportlab>=3.6.0
+matplotlib>=3.7.0
+```
