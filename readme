@@ -1,0 +1,2017 @@
+I'll create a comprehensive cybersecurity project with a user-friendly GUI for Kali Linux tools. This will help beginners access powerful security tools without memorizing complex command-line syntax.
+
+## Project: **CyberGuard UI** - Kali Tools GUI Suite
+
+### Project Structure
+
+```
+cyberguard-ui/
+├── main.py                 # Application entry point
+├── gui/
+│   ├── __init__.py
+│   ├── main_window.py      # Main application window
+│   ├── tool_cards.py       # Reusable tool widgets
+│   ├── terminal_emulator.py # Embedded terminal output
+│   └── styles.py           # Theme and styling
+├── tools/
+│   ├── __init__.py
+│   ├── base_tool.py        # Abstract base class for all tools
+│   ├── reconnaissance.py   # Information gathering tools
+│   ├── scanning.py         # Vulnerability scanners
+│   ├── wireless.py         # WiFi/Bluetooth tools
+│   ├── exploitation.py     # Metasploit integration
+│   ├── forensics.py        # Digital forensics tools
+│   └── reporting.py        # Report generation
+├── utils/
+│   ├── __init__.py
+│   ├── command_runner.py   # Safe command execution
+│   ├── validators.py       # Input validation
+│   └── config.py           # Configuration management
+├── assets/
+│   ├── icons/
+│   └── themes/
+├── requirements.txt
+└── README.md
+```
+
+### Core Implementation
+
+#### 1. `requirements.txt`
+
+```txt
+PyQt6>=6.4.0
+qterminal>=0.1.0
+paramiko>=3.0.0
+python-nmap>=0.7.1
+scapy>=2.5.0
+requests>=2.28.0
+cryptography>=40.0.0
+reportlab>=3.6.0
+matplotlib>=3.7.0
+```
+
+#### 2. `main.py` - Entry Point
+
+```python
+#!/usr/bin/env python3
+"""
+CyberGuard UI - Kali Linux Tools GUI Suite
+A beginner-friendly interface for cybersecurity tools
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import Qt
+from gui.main_window import CyberGuardMainWindow
+from gui.styles import apply_dark_theme
+
+
+def main():
+    """Initialize and run CyberGuard UI"""
+    # Enable high DPI scaling
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+    
+    app = QApplication(sys.argv)
+    app.setApplicationName("CyberGuard UI")
+    app.setApplicationVersion("1.0.0")
+    app.setOrganizationName("CyberGuard")
+    
+    # Apply professional dark theme
+    apply_dark_theme(app)
+    
+    # Create and show main window
+    window = CyberGuardMainWindow()
+    window.show()
+    
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
+```
+
+#### 3. `gui/styles.py` - Professional Dark Theme
+
+```python
+"""
+CyberGuard UI - Theme and Styling
+Modern dark theme optimized for long security work sessions
+"""
+
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QPalette, QColor, QFont
+
+
+def apply_dark_theme(app: QApplication):
+    """Apply professional cybersecurity dark theme"""
+    
+    # Color scheme - Cyberpunk-inspired security colors
+    COLORS = {
+        'background': '#0d1117',
+        'surface': '#161b22',
+        'surface_hover': '#1c2128',
+        'border': '#30363d',
+        'text_primary': '#c9d1d9',
+        'text_secondary': '#8b949e',
+        'accent': '#58a6ff',      # Blue for info/actions
+        'success': '#3fb950',      # Green for success
+        'warning': '#d29922',      # Orange for warnings
+        'danger': '#f85149',       # Red for critical/danger
+        'info': '#a371f7',         # Purple for special features
+    }
+    
+    app.setStyle('Fusion')
+    
+    palette = QPalette()
+    
+    # Base colors
+    palette.setColor(QPalette.ColorRole.Window, QColor(COLORS['background']))
+    palette.setColor(QPalette.ColorRole.WindowText, QColor(COLORS['text_primary']))
+    palette.setColor(QPalette.ColorRole.Base, QColor(COLORS['surface']))
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(COLORS['surface_hover']))
+    palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(COLORS['surface']))
+    palette.setColor(QPalette.ColorRole.ToolTipText, QColor(COLORS['text_primary']))
+    palette.setColor(QPalette.ColorRole.Text, QColor(COLORS['text_primary']))
+    palette.setColor(QPalette.ColorRole.Button, QColor(COLORS['surface']))
+    palette.setColor(QPalette.ColorRole.ButtonText, QColor(COLORS['text_primary']))
+    palette.setColor(QPalette.ColorRole.BrightText, QColor(COLORS['danger']))
+    palette.setColor(QPalette.ColorRole.Highlight, QColor(COLORS['accent']))
+    palette.setColor(QPalette.ColorRole.HighlightedText, QColor(COLORS['background']))
+    
+    app.setPalette(palette)
+    
+    # Global stylesheet
+    app.setStyleSheet(f"""
+        QMainWindow {{
+            background-color: {COLORS['background']};
+        }}
+        
+        QWidget {{
+            font-family: 'Segoe UI', 'Ubuntu', sans-serif;
+            font-size: 10pt;
+        }}
+        
+        QPushButton {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            padding: 8px 16px;
+            min-width: 80px;
+        }}
+        
+        QPushButton:hover {{
+            background-color: {COLORS['surface_hover']};
+            border-color: {COLORS['accent']};
+        }}
+        
+        QPushButton:pressed {{
+            background-color: {COLORS['accent']};
+            color: {COLORS['background']};
+        }}
+        
+        QPushButton#primaryButton {{
+            background-color: {COLORS['accent']};
+            color: {COLORS['background']};
+            font-weight: bold;
+        }}
+        
+        QPushButton#primaryButton:hover {{
+            background-color: #79c0ff;
+        }}
+        
+        QPushButton#dangerButton {{
+            background-color: {COLORS['danger']};
+            color: white;
+        }}
+        
+        QPushButton#successButton {{
+            background-color: {COLORS['success']};
+            color: {COLORS['background']};
+        }}
+        
+        QLineEdit, QTextEdit, QPlainTextEdit {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            padding: 8px;
+            selection-background-color: {COLORS['accent']};
+        }}
+        
+        QLineEdit:focus, QTextEdit:focus {{
+            border-color: {COLORS['accent']};
+        }}
+        
+        QComboBox {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            padding: 8px;
+            min-width: 120px;
+        }}
+        
+        QComboBox:hover {{
+            border-color: {COLORS['accent']};
+        }}
+        
+        QComboBox::drop-down {{
+            border: none;
+            width: 30px;
+        }}
+        
+        QComboBox QAbstractItemView {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            selection-background-color: {COLORS['accent']};
+            border: 1px solid {COLORS['border']};
+        }}
+        
+        QTabWidget::pane {{
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            background-color: {COLORS['surface']};
+        }}
+        
+        QTabBar::tab {{
+            background-color: {COLORS['background']};
+            color: {COLORS['text_secondary']};
+            padding: 10px 20px;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }}
+        
+        QTabBar::tab:selected {{
+            color: {COLORS['accent']};
+            border-bottom: 2px solid {COLORS['accent']};
+        }}
+        
+        QTabBar::tab:hover {{
+            color: {COLORS['text_primary']};
+            background-color: {COLORS['surface_hover']};
+        }}
+        
+        QGroupBox {{
+            color: {COLORS['text_secondary']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            margin-top: 12px;
+            font-weight: bold;
+            padding-top: 10px;
+        }}
+        
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            left: 10px;
+            padding: 0 5px;
+        }}
+        
+        QProgressBar {{
+            border: 1px solid {COLORS['border']};
+            border-radius: 4px;
+            text-align: center;
+            color: {COLORS['text_primary']};
+        }}
+        
+        QProgressBar::chunk {{
+            background-color: {COLORS['accent']};
+            border-radius: 3px;
+        }}
+        
+        QScrollBar:vertical {{
+            background-color: {COLORS['background']};
+            width: 12px;
+            border-radius: 6px;
+        }}
+        
+        QScrollBar::handle:vertical {{
+            background-color: {COLORS['border']};
+            border-radius: 6px;
+            min-height: 30px;
+        }}
+        
+        QScrollBar::handle:vertical:hover {{
+            background-color: {COLORS['text_secondary']};
+        }}
+        
+        QTreeWidget, QTableWidget {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 6px;
+            outline: none;
+        }}
+        
+        QTreeWidget::item:selected, QTableWidget::item:selected {{
+            background-color: {COLORS['accent']};
+            color: {COLORS['background']};
+        }}
+        
+        QTreeWidget::item:hover, QTableWidget::item:hover {{
+            background-color: {COLORS['surface_hover']};
+        }}
+        
+        QHeaderView::section {{
+            background-color: {COLORS['background']};
+            color: {COLORS['text_secondary']};
+            padding: 8px;
+            border: none;
+            border-bottom: 1px solid {COLORS['border']};
+        }}
+        
+        QLabel#titleLabel {{
+            color: {COLORS['accent']};
+            font-size: 18pt;
+            font-weight: bold;
+        }}
+        
+        QLabel#descriptionLabel {{
+            color: {COLORS['text_secondary']};
+            font-size: 10pt;
+        }}
+        
+        QFrame#cardFrame {{
+            background-color: {COLORS['surface']};
+            border: 1px solid {COLORS['border']};
+            border-radius: 8px;
+        }}
+        
+        QFrame#cardFrame:hover {{
+            border-color: {COLORS['accent']};
+        }}
+        
+        QMenuBar {{
+            background-color: {COLORS['background']};
+            color: {COLORS['text_primary']};
+        }}
+        
+        QMenuBar::item:selected {{
+            background-color: {COLORS['surface_hover']};
+        }}
+        
+        QMenu {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+        }}
+        
+        QMenu::item:selected {{
+            background-color: {COLORS['accent']};
+            color: {COLORS['background']};
+        }}
+        
+        QToolTip {{
+            background-color: {COLORS['surface']};
+            color: {COLORS['text_primary']};
+            border: 1px solid {COLORS['border']};
+            padding: 5px;
+        }}
+    """)
+    
+    # Set default font
+    font = QFont('Segoe UI', 10)
+    if not QFont(font).exactMatch():
+        font = QFont('Ubuntu', 10)
+    app.setFont(font)
+    
+    return COLORS
+
+
+# Export colors for use in other modules
+THEME_COLORS = None
+
+def get_colors():
+    """Get current theme colors"""
+    global THEME_COLORS
+    if THEME_COLORS is None:
+        THEME_COLORS = {
+            'background': '#0d1117',
+            'surface': '#161b22',
+            'surface_hover': '#1c2128',
+            'border': '#30363d',
+            'text_primary': '#c9d1d9',
+            'text_secondary': '#8b949e',
+            'accent': '#58a6ff',
+            'success': '#3fb950',
+            'warning': '#d29922',
+            'danger': '#f85149',
+            'info': '#a371f7',
+        }
+    return THEME_COLORS
+```
+
+#### 4. `gui/main_window.py` - Main Application
+
+```python
+"""
+CyberGuard UI - Main Window
+Central hub for all cybersecurity tools
+"""
+
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QStackedWidget, QPushButton, QLabel, QFrame,
+    QScrollArea, QSizePolicy, QMessageBox, QMenuBar,
+    QMenu, QStatusBar, QProgressBar, QSplitter
+)
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
+from PyQt6.QtGui import QAction, QIcon, QFont
+
+from gui.styles import get_colors
+from gui.tool_cards import ToolCategoryCard, ToolWidget
+from gui.terminal_emulator import TerminalWidget
+from tools.reconnaissance import ReconnaissanceTools
+from tools.scanning import ScanningTools
+from tools.wireless import WirelessTools
+from tools.exploitation import ExploitationTools
+from tools.forensics import ForensicsTools
+
+
+class CyberGuardMainWindow(QMainWindow):
+    """Main application window with category navigation"""
+    
+    def __init__(self):
+        super().__init__()
+        self.colors = get_colors()
+        self.current_tool = None
+        self.setup_ui()
+        self.setup_menu()
+        self.setup_status_bar()
+        
+    def setup_ui(self):
+        """Initialize main user interface"""
+        self.setWindowTitle("CyberGuard UI - Kali Linux Tools Suite")
+        self.setMinimumSize(1400, 900)
+        
+        # Central widget with horizontal splitter
+        central = QWidget()
+        self.setCentralWidget(central)
+        layout = QHBoxLayout(central)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        # Left sidebar - Category navigation
+        self.sidebar = self.create_sidebar()
+        layout.addWidget(self.sidebar)
+        
+        # Main content area with splitter
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        
+        # Tool workspace (center)
+        self.workspace = QStackedWidget()
+        self.workspace.setMinimumWidth(600)
+        
+        # Category overview page
+        self.overview_page = self.create_overview_page()
+        self.workspace.addWidget(self.overview_page)
+        
+        # Tool pages will be added dynamically
+        self.tool_pages = {}
+        
+        self.splitter.addWidget(self.workspace)
+        
+        # Right panel - Terminal output
+        self.terminal = TerminalWidget()
+        self.terminal.setMinimumWidth(400)
+        self.splitter.addWidget(self.terminal)
+        
+        # Set splitter proportions (60% workspace, 40% terminal)
+        self.splitter.setSizes([800, 500])
+        
+        layout.addWidget(self.splitter)
+        
+    def create_sidebar(self) -> QWidget:
+        """Create left navigation sidebar"""
+        sidebar = QFrame()
+        sidebar.setFixedWidth(220)
+        sidebar.setStyleSheet(f"""
+            QFrame {{
+                background-color: {self.colors['surface']};
+                border-right: 1px solid {self.colors['border']};
+            }}
+        """)
+        
+        layout = QVBoxLayout(sidebar)
+        layout.setContentsMargins(16, 20, 16, 20)
+        layout.setSpacing(8)
+        
+        # Logo/Title
+        title = QLabel("🔒 CyberGuard")
+        title.setStyleSheet(f"""
+            color: {self.colors['accent']};
+            font-size: 18px;
+            font-weight: bold;
+        """)
+        layout.addWidget(title)
+        
+        subtitle = QLabel("Kali Linux GUI Suite")
+        subtitle.setStyleSheet(f"color: {self.colors['text_secondary']};")
+        layout.addWidget(subtitle)
+        
+        layout.addSpacing(20)
+        
+        # Navigation buttons
+        self.nav_buttons = {}
+        
+        categories = [
+            ("🏠", "Overview", "overview"),
+            ("🔍", "Reconnaissance", "recon"),
+            ("📡", "Network Scanning", "scan"),
+            ("📶", "Wireless Attacks", "wireless"),
+            ("💥", "Exploitation", "exploit"),
+            ("🔬", "Forensics", "forensics"),
+        ]
+        
+        for icon, text, key in categories:
+            btn = QPushButton(f"{icon}  {text}")
+            btn.setCheckable(True)
+            btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    text-align: left;
+                    padding: 12px 16px;
+                    border: none;
+                    border-radius: 8px;
+                    color: {self.colors['text_secondary']};
+                    font-size: 11px;
+                }}
+                QPushButton:hover {{
+                    background-color: {self.colors['surface_hover']};
+                    color: {self.colors['text_primary']};
+                }}
+                QPushButton:checked {{
+                    background-color: {self.colors['accent']};
+                    color: {self.colors['background']};
+                    font-weight: bold;
+                }}
+            """)
+            btn.clicked.connect(lambda checked, k=key: self.navigate_to(k))
+            self.nav_buttons[key] = btn
+            layout.addWidget(btn)
+        
+        layout.addStretch()
+        
+        # Help button at bottom
+        help_btn = QPushButton("❓  Help & Documentation")
+        help_btn.setStyleSheet(f"""
+            QPushButton {{
+                text-align: left;
+                padding: 12px 16px;
+                border: 1px solid {self.colors['border']};
+                border-radius: 8px;
+                color: {self.colors['text_secondary']};
+            }}
+            QPushButton:hover {{
+                border-color: {self.colors['accent']};
+                color: {self.colors['text_primary']};
+            }}
+        """)
+        help_btn.clicked.connect(self.show_help)
+        layout.addWidget(help_btn)
+        
+        return sidebar
+    
+    def create_overview_page(self) -> QWidget:
+        """Create main dashboard/overview page"""
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(20)
+        
+        # Welcome header
+        header = QLabel("Welcome to CyberGuard UI")
+        header.setStyleSheet(f"""
+            color: {self.colors['text_primary']};
+            font-size: 28px;
+            font-weight: bold;
+        """)
+        layout.addWidget(header)
+        
+        desc = QLabel("Select a category below to start using Kali Linux security tools with an intuitive interface.")
+        desc.setStyleSheet(f"color: {self.colors['text_secondary']}; font-size: 12px;")
+        desc.setWordWrap(True)
+        layout.addWidget(desc)
+        
+        layout.addSpacing(20)
+        
+        # Category grid
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        
+        container = QWidget()
+        grid = QHBoxLayout(container)
+        grid.setSpacing(20)
+        
+        # Tool category cards
+        categories = [
+            {
+                'key': 'recon',
+                'icon': '🔍',
+                'title': 'Reconnaissance',
+                'desc': 'Information gathering and footprinting',
+                'tools': ['theHarvester', 'Maltego', 'Recon-ng', 'OSINT Framework'],
+                'color': self.colors['accent']
+            },
+            {
+                'key': 'scan',
+                'icon': '📡',
+                'title': 'Network Scanning',
+                'desc': 'Port scanning and vulnerability detection',
+                'tools': ['Nmap', 'Masscan', 'OpenVAS', 'Nessus'],
+                'color': self.colors['success']
+            },
+            {
+                'key': 'wireless',
+                'icon': '📶',
+                'title': 'Wireless Attacks',
+                'desc': 'WiFi security testing and analysis',
+                'tools': ['Aircrack-ng', 'Wifite', 'Fern WiFi Cracker', 'Kismet'],
+                'color': self.colors['warning']
+            },
+            {
+                'key': 'exploit',
+                'icon': '💥',
+                'title': 'Exploitation',
+                'desc': 'Penetration testing frameworks',
+                'tools': ['Metasploit', 'BeEF', 'SQLMap', 'Commix'],
+                'color': self.colors['danger']
+            },
+            {
+                'key': 'forensics',
+                'icon': '🔬',
+                'title': 'Digital Forensics',
+                'desc': 'Evidence collection and analysis',
+                'tools': ['Autopsy', 'Sleuth Kit', 'Volatility', 'Binwalk'],
+                'color': self.colors['info']
+            },
+        ]
+        
+        for cat in categories:
+            card = ToolCategoryCard(cat, self)
+            card.clicked.connect(lambda k=cat['key']: self.navigate_to(k))
+            grid.addWidget(card)
+        
+        grid.addStretch()
+        scroll.setWidget(container)
+        layout.addWidget(scroll)
+        
+        # Quick start section
+        layout.addSpacing(30)
+        quick_label = QLabel("⚡ Quick Start")
+        quick_label.setStyleSheet(f"""
+            color: {self.colors['text_primary']};
+            font-size: 16px;
+            font-weight: bold;
+        """)
+        layout.addWidget(quick_label)
+        
+        quick_desc = QLabel("New to penetration testing? Start with a basic network scan to learn the workflow.")
+        quick_desc.setStyleSheet(f"color: {self.colors['text_secondary']};")
+        layout.addWidget(quick_desc)
+        
+        quick_btn = QPushButton("🚀  Run Quick Network Scan")
+        quick_btn.setObjectName("primaryButton")
+        quick_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        quick_btn.setFixedWidth(250)
+        quick_btn.clicked.connect(lambda: self.navigate_to('scan'))
+        layout.addWidget(quick_btn)
+        
+        layout.addStretch()
+        
+        return page
+    
+    def setup_menu(self):
+        """Create application menu bar"""
+        menubar = self.menuBar()
+        
+        # File menu
+        file_menu = menubar.addMenu("File")
+        
+        new_session = QAction("New Session", self)
+        new_session.setShortcut("Ctrl+N")
+        file_menu.addAction(new_session)
+        
+        save_report = QAction("Save Report...", self)
+        save_report.setShortcut("Ctrl+S")
+        file_menu.addAction(save_report)
+        
+        file_menu.addSeparator()
+        
+        exit_action = QAction("Exit", self)
+        exit_action.setShortcut("Ctrl+Q")
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+        
+        # Tools menu
+        tools_menu = menubar.addMenu("Tools")
+        
+        update_tools = QAction("Update Kali Tools", self)
+        update_tools.triggered.connect(self.update_kali_tools)
+        tools_menu.addAction(update_tools)
+        
+        # Help menu
+        help_menu = menubar.addMenu("Help")
+        
+        docs = QAction("Documentation", self)
+        docs.setShortcut("F1")
+        docs.triggered.connect(self.show_help)
+        help_menu.addAction(docs)
+        
+        about = QAction("About", self)
+        about.triggered.connect(self.show_about)
+        help_menu.addAction(about)
+    
+    def setup_status_bar(self):
+        """Create status bar with system info"""
+        self.statusbar = QStatusBar()
+        self.setStatusBar(self.statusbar)
+        
+        # System status
+        self.status_label = QLabel("✓ System Ready")
+        self.statusbar.addWidget(self.status_label)
+        
+        self.statusbar.addStretch()
+        
+        # Progress indicator
+        self.progress = QProgressBar()
+        self.progress.setMaximumWidth(150)
+        self.progress.setVisible(False)
+        self.statusbar.addWidget(self.progress)
+        
+        # Tool status
+        self.tool_status = QLabel("No tool running")
+        self.statusbar.addWidget(self.tool_status)
+    
+    def navigate_to(self, category: str):
+        """Navigate to specific category or tool page"""
+        # Update sidebar selection
+        for key, btn in self.nav_buttons.items():
+            btn.setChecked(key == category)
+        
+        if category == 'overview':
+            self.workspace.setCurrentWidget(self.overview_page)
+            return
+        
+        # Create tool page if not exists
+        if category not in self.tool_pages:
+            page = self.create_tool_page(category)
+            self.tool_pages[category] = page
+            self.workspace.addWidget(page)
+        
+        self.workspace.setCurrentWidget(self.tool_pages[category])
+    
+    def create_tool_page(self, category: str) -> QWidget:
+        """Create tool page for specific category"""
+        pages = {
+            'recon': ReconnaissancePage,
+            'scan': ScanningPage,
+            'wireless': WirelessPage,
+            'exploit': ExploitationPage,
+            'forensics': ForensicsPage,
+        }
+        
+        page_class = pages.get(category, QWidget)
+        return page_class(self.terminal, self)
+    
+    def show_help(self):
+        """Show help documentation"""
+        QMessageBox.information(self, "Help", 
+            "CyberGuard UI Help\n\n"
+            "1. Select a tool category from the sidebar\n"
+            "2. Configure tool parameters in the form\n"
+            "3. Click Run to execute the tool\n"
+            "4. View output in the terminal panel\n\n"
+            "For detailed documentation, visit: https://github.com/cyberguard/ui")
+    
+    def show_about(self):
+        """Show about dialog"""
+        QMessageBox.about(self, "About CyberGuard UI",
+            "<h2>CyberGuard UI 1.0</h2>"
+            "<p>A beginner-friendly graphical interface for Kali Linux security tools.</p>"
+            "<p>Built with PyQt6 for modern Linux distributions.</p>"
+            "<p><b>Warning:</b> Only use on systems you own or have explicit permission to test.</p>")
+    
+    def update_kali_tools(self):
+        """Update Kali Linux tools via apt"""
+        self.terminal.execute_command("sudo apt update && sudo apt upgrade -y")
+
+
+# ============== Individual Tool Pages ==============
+
+class ReconnaissancePage(QWidget):
+    """Reconnaissance and information gathering tools"""
+    
+    def __init__(self, terminal, parent=None):
+        super().__init__(parent)
+        self.terminal = terminal
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        # Header
+        header = QLabel("🔍 Reconnaissance Tools")
+        header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addWidget(header)
+        
+        desc = QLabel("Gather information about targets without direct interaction")
+        desc.setStyleSheet(f"color: {get_colors()['text_secondary']};")
+        layout.addWidget(desc)
+        
+        layout.addSpacing(20)
+        
+        # Tool: theHarvester
+        harvester = ToolWidget(
+            "theHarvester",
+            "Email harvesting and subdomain discovery",
+            [
+                {'name': 'domain', 'label': 'Target Domain', 'type': 'text', 
+                 'placeholder': 'example.com', 'required': True},
+                {'name': 'limit', 'label': 'Result Limit', 'type': 'number', 
+                 'default': 500},
+                {'name': 'source', 'label': 'Data Sources', 'type': 'multiselect',
+                 'options': ['baidu', 'bing', 'google', 'linkedin', 'twitter', 
+                           'virustotal', 'threatcrowd', 'crtsh']},
+            ],
+            self.run_harvester
+        )
+        layout.addWidget(harvester)
+        
+        # Tool: Recon-ng
+        reconng = ToolWidget(
+            "Recon-ng",
+            "Web reconnaissance framework with modules",
+            [
+                {'name': 'workspace', 'label': 'Workspace Name', 'type': 'text',
+                 'placeholder': 'my_target'},
+                {'name': 'module', 'label': 'Module', 'type': 'select',
+                 'options': ['recon/domains-hosts/brute_hosts',
+                           'recon/domains-hosts/google_site_web',
+                           'recon/hosts-hosts/resolve']},
+            ],
+            self.run_reconng
+        )
+        layout.addWidget(reconng)
+        
+        layout.addStretch()
+
+
+class ScanningPage(QWidget):
+    """Network scanning and vulnerability assessment"""
+    
+    def __init__(self, terminal, parent=None):
+        super().__init__(parent)
+        self.terminal = terminal
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        header = QLabel("📡 Network Scanning")
+        header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addWidget(header)
+        
+        desc = QLabel("Discover hosts, services, and vulnerabilities on networks")
+        desc.setStyleSheet(f"color: {get_colors()['text_secondary']};")
+        layout.addWidget(desc)
+        
+        layout.addSpacing(20)
+        
+        # Tool: Nmap
+        nmap = ToolWidget(
+            "Nmap",
+            "Network discovery and security auditing",
+            [
+                {'name': 'target', 'label': 'Target Host/IP', 'type': 'text',
+                 'placeholder': '192.168.1.1 or scanme.nmap.org', 'required': True},
+                {'name': 'scan_type', 'label': 'Scan Type', 'type': 'select',
+                 'options': ['Quick Scan (-F)', 'Intense Scan (-A)', 
+                           'Intense Scan + UDP (-sS -sU -A)',
+                           'Quick Scan Plus (-sV -T4 -O -F --version-light)',
+                           'Ping Scan (-sn)', 'Regular Scan']},
+                {'name': 'ports', 'label': 'Port Range', 'type': 'text',
+                 'placeholder': '80,443,8080 or 1-1000'},
+                {'name': 'timing', 'label': 'Timing Template', 'type': 'select',
+                 'options': ['T0 (Paranoid)', 'T1 (Sneaky)', 'T2 (Polite)',
+                           'T3 (Normal)', 'T4 (Aggressive)', 'T5 (Insane)']},
+                {'name': 'save_output', 'label': 'Save Output', 'type': 'checkbox'},
+            ],
+            self.run_nmap
+        )
+        layout.addWidget(nmap)
+        
+        # Tool: Masscan
+        masscan = ToolWidget(
+            "Masscan",
+            "Internet-scale port scanner (ASYNC)",
+            [
+                {'name': 'target', 'label': 'Target Range', 'type': 'text',
+                 'placeholder': '10.0.0.0/8', 'required': True},
+                {'name': 'ports', 'label': 'Ports', 'type': 'text',
+                 'placeholder': '0-65535', 'default': '80,443'},
+                {'name': 'rate', 'label': 'Packets/Second', 'type': 'number',
+                 'default': 1000},
+            ],
+            self.run_masscan
+        )
+        layout.addWidget(masscan)
+        
+        layout.addStretch()
+    
+    def run_nmap(self, params: dict):
+        """Execute nmap with GUI parameters"""
+        target = params['target']
+        
+        scan_types = {
+            'Quick Scan (-F)': '-F',
+            'Intense Scan (-A)': '-A',
+            'Intense Scan + UDP (-sS -sU -A)': '-sS -sU -A',
+            'Quick Scan Plus (-sV -T4 -O -F --version-light)': '-sV -T4 -O -F --version-light',
+            'Ping Scan (-sn)': '-sn',
+            'Regular Scan': ''
+        }
+        
+        cmd = ['nmap']
+        cmd.append(scan_types.get(params['scan_type'], ''))
+        
+        if params.get('ports'):
+            cmd.extend(['-p', params['ports']])
+        
+        if params.get('timing'):
+            timing = params['timing'].split()[0]
+            cmd.append(f'-{timing.lower()}')
+        
+        cmd.append(target)
+        
+        if params.get('save_output'):
+            cmd.extend(['-oX', f'nmap_{target.replace("/", "_")}.xml'])
+        
+        self.terminal.execute_command(' '.join(filter(None, cmd)))
+
+
+class WirelessPage(QWidget):
+    """Wireless security testing tools"""
+    
+    def __init__(self, terminal, parent=None):
+        super().__init__(parent)
+        self.terminal = terminal
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        header = QLabel("📶 Wireless Security")
+        header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addWidget(header)
+        
+        # Warning banner
+        warning = QFrame()
+        warning.setStyleSheet(f"""
+            background-color: {get_colors()['warning']}20;
+            border: 1px solid {get_colors()['warning']};
+            border-radius: 8px;
+            padding: 15px;
+        """)
+        warn_layout = QHBoxLayout(warning)
+        warn_icon = QLabel("⚠️")
+        warn_icon.setStyleSheet("font-size: 24px;")
+        warn_layout.addWidget(warn_icon)
+        warn_text = QLabel("Wireless testing requires a compatible USB adapter in monitor mode. "
+                          "Only test networks you own or have written permission to test.")
+        warn_text.setWordWrap(True)
+        warn_text.setStyleSheet(f"color: {get_colors()['warning']};")
+        warn_layout.addWidget(warn_text, 1)
+        layout.addWidget(warning)
+        
+        layout.addSpacing(20)
+        
+        # Tool: Aircrack-ng suite
+        aircrack = ToolWidget(
+            "Aircrack-ng",
+            "WEP and WPA/WPA2-PSK key cracking",
+            [
+                {'name': 'bssid', 'label': 'Target BSSID', 'type': 'text',
+                 'placeholder': 'AA:BB:CC:DD:EE:FF'},
+                {'name': 'essid', 'label': 'Network Name (ESSID)', 'type': 'text'},
+                {'name': 'wordlist', 'label': 'Wordlist Path', 'type': 'file',
+                 'default': '/usr/share/wordlists/rockyou.txt'},
+                {'name': 'capture', 'label': 'Capture File (.cap)', 'type': 'file'},
+            ],
+            self.run_aircrack
+        )
+        layout.addWidget(aircrack)
+        
+        # Tool: Wifite
+        wifite = ToolWidget(
+            "Wifite",
+            "Automated wireless auditor",
+            [
+                {'name': 'interface', 'label': 'Wireless Interface', 'type': 'text',
+                 'default': 'wlan0mon'},
+                {'name': 'wpa', 'label': 'Target WPA only', 'type': 'checkbox',
+                 'default': True},
+                {'name': 'dict', 'label': 'Dictionary Attack', 'type': 'checkbox'},
+                {'name': 'pixie', 'label': 'WPS Pixie Dust Attack', 'type': 'checkbox'},
+            ],
+            self.run_wifite
+        )
+        layout.addWidget(wifite)
+        
+        layout.addStretch()
+
+
+class ExploitationPage(QWidget):
+    """Penetration testing and exploitation frameworks"""
+    
+    def __init__(self, terminal, parent=None):
+        super().__init__(parent)
+        self.terminal = terminal
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        header = QLabel("💥 Exploitation Frameworks")
+        header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addWidget(header)
+        
+        # Critical warning
+        warning = QFrame()
+        warning.setStyleSheet(f"""
+            background-color: {get_colors()['danger']}20;
+            border: 1px solid {get_colors()['danger']};
+            border-radius: 8px;
+            padding: 15px;
+        """)
+        warn_layout = QHBoxLayout(warning)
+        warn_icon = QLabel("🚨")
+        warn_icon.setStyleSheet("font-size: 24px;")
+        warn_layout.addWidget(warn_icon)
+        warn_text = QLabel("EXPLOITATION TOOLS: These can cause system damage and legal consequences. "
+                          "Only use on authorized test systems with proper documentation.")
+        warn_text.setWordWrap(True)
+        warn_text.setStyleSheet(f"color: {get_colors()['danger']}; font-weight: bold;")
+        warn_layout.addWidget(warn_text, 1)
+        layout.addWidget(warning)
+        
+        layout.addSpacing(20)
+        
+        # Tool: SQLMap
+        sqlmap = ToolWidget(
+            "SQLMap",
+            "Automatic SQL injection and database takeover",
+            [
+                {'name': 'url', 'label': 'Target URL', 'type': 'text',
+                 'placeholder': 'http://target.com/page.php?id=1', 'required': True},
+                {'name': 'level', 'label': 'Test Level (1-5)', 'type': 'number',
+                 'default': 1, 'min': 1, 'max': 5},
+                {'name': 'risk', 'label': 'Risk Level (1-3)', 'type': 'number',
+                 'default': 1, 'min': 1, 'max': 3},
+                {'name': 'dbs', 'label': 'Enumerate Databases', 'type': 'checkbox'},
+                {'name': 'tables', 'label': 'Enumerate Tables', 'type': 'checkbox'},
+                {'name': 'dump', 'label': 'Dump Data', 'type': 'checkbox'},
+                {'name': 'tor', 'label': 'Use Tor Proxy', 'type': 'checkbox'},
+            ],
+            self.run_sqlmap
+        )
+        layout.addWidget(sqlmap)
+        
+        # Tool: Metasploit quick launcher
+        msf = ToolWidget(
+            "Metasploit Console",
+            "Launch Metasploit Framework console",
+            [
+                {'name': 'resource', 'label': 'Resource Script (optional)', 'type': 'file'},
+                {'name': 'quiet', 'label': 'Quiet Mode', 'type': 'checkbox'},
+            ],
+            self.run_msfconsole
+        )
+        layout.addWidget(msf)
+        
+        layout.addStretch()
+
+
+class ForensicsPage(QWidget):
+    """Digital forensics and incident response"""
+    
+    def __init__(self, terminal, parent=None):
+        super().__init__(parent)
+        self.terminal = terminal
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        header = QLabel("🔬 Digital Forensics")
+        header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addWidget(header)
+        
+        desc = QLabel("Evidence collection, analysis, and incident response")
+        desc.setStyleSheet(f"color: {get_colors()['text_secondary']};")
+        layout.addWidget(desc)
+        
+        layout.addSpacing(20)
+        
+        # Tool: Autopsy
+        autopsy = ToolWidget(
+            "Autopsy",
+            "Digital forensics platform and GUI for Sleuth Kit",
+            [
+                {'name': 'case', 'label': 'Case Name', 'type': 'text',
+                 'default': 'Case_001'},
+                {'name': 'image', 'label': 'Disk Image (optional)', 'type': 'file'},
+            ],
+            self.run_autopsy
+        )
+        layout.addWidget(autopsy)
+        
+        # Tool: Binwalk
+        binwalk = ToolWidget(
+            "Binwalk",
+            "Firmware analysis and extraction",
+            [
+                {'name': 'file', 'label': 'Target File', 'type': 'file',
+                 'required': True},
+                {'name': 'extract', 'label': 'Auto-extract Files', 'type': 'checkbox',
+                 'default': True},
+                {'name': 'depth', 'label': 'Recursion Depth', 'type': 'number',
+                 'default': 8},
+            ],
+            self.run_binwalk
+        )
+        layout.addWidget(binwalk)
+        
+        layout.addStretch()
+```
+
+#### 5. `gui/tool_cards.py` - Reusable Tool Components
+
+```python
+"""
+CyberGuard UI - Tool Cards and Widgets
+Reusable components for tool configuration and execution
+"""
+
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
+    QLineEdit, QComboBox, QCheckBox, QSpinBox, QFileDialog,
+    QFrame, QGridLayout, QGroupBox, QTextEdit, QMessageBox,
+    QScrollArea, QSizePolicy
+)
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QFont
+
+from gui.styles import get_colors
+
+
+class ToolCategoryCard(QFrame):
+    """Clickable card for tool categories"""
+    
+    clicked = pyqtSignal()
+    
+    def __init__(self, data: dict, parent=None):
+        super().__init__(parent)
+        self.data = data
+        self.colors = get_colors()
+        self.setup_ui()
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        
+    def setup_ui(self):
+        self.setObjectName("cardFrame")
+        self.setFixedSize(280, 200)
+        
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(10)
+        
+        # Icon
+        icon = QLabel(self.data['icon'])
+        icon.setStyleSheet(f"font-size: 48px;")
+        layout.addWidget(icon)
+        
+        # Title
+        title = QLabel(self.data['title'])
+        title.setStyleSheet(f"""
+            color: {self.data['color']};
+            font-size: 16px;
+            font-weight: bold;
+        """)
+        layout.addWidget(title)
+        
+        # Description
+        desc = QLabel(self.data['desc'])
+        desc.setStyleSheet(f"color: {self.colors['text_secondary']}; font-size: 11px;")
+        desc.setWordWrap(True)
+        layout.addWidget(desc)
+        
+        layout.addStretch()
+        
+        # Tools list
+        tools = QLabel("Tools: " + ", ".join(self.data['tools'][:3]) + "...")
+        tools.setStyleSheet(f"color: {self.colors['text_secondary']}; font-size: 9px;")
+        layout.addWidget(tools)
+    
+    def mousePressEvent(self, event):
+        self.clicked.emit()
+
+
+class ToolWidget(QGroupBox):
+    """Configurable tool execution widget"""
+    
+    def __init__(self, name: str, description: str, 
+                 fields: list, run_callback, parent=None):
+        super().__init__(parent)
+        self.name = name
+        self.description = description
+        self.fields_config = fields
+        self.run_callback = run_callback
+        self.field_widgets = {}
+        self.colors = get_colors()
+        
+        self.setTitle(name)
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        
+        # Description
+        desc = QLabel(self.description)
+        desc.setStyleSheet(f"color: {self.colors['text_secondary']};")
+        layout.addWidget(desc)
+        
+        # Form layout for parameters
+        form = QGridLayout()
+        form.setColumnStretch(1, 1)
+        form.setSpacing(10)
+        
+        row = 0
+        for field in self.fields_config:
+            # Label
+            label_text = field['label']
+            if field.get('required'):
+                label_text += " *"
+            
+            label = QLabel(label_text)
+            label.setStyleSheet(f"""
+                color: {self.colors['text_primary']};
+                {'color: ' + self.colors['accent'] + '; font-weight: bold;' if field.get('required') else ''}
+            """)
+            form.addWidget(label, row, 0)
+            
+            # Input widget based on type
+            widget = self.create_input_widget(field)
+            self.field_widgets[field['name']] = widget
+            form.addWidget(widget, row, 1)
+            
+            row += 1
+        
+        layout.addLayout(form)
+        
+        # Action buttons
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        
+        self.reset_btn = QPushButton("↺ Reset")
+        self.reset_btn.clicked.connect(self.reset_fields)
+        btn_layout.addWidget(self.reset_btn)
+        
+        self.preview_btn = QPushButton("👁 Preview Command")
+        self.preview_btn.clicked.connect(self.preview_command)
+        btn_layout.addWidget(self.preview_btn)
+        
+        self.run_btn = QPushButton(f"▶ Run {self.name}")
+        self.run_btn.setObjectName("primaryButton")
+        self.run_btn.clicked.connect(self.execute_tool)
+        btn_layout.addWidget(self.run_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        # Command preview area
+        self.preview_area = QTextEdit()
+        self.preview_area.setPlaceholderText("Command preview will appear here...")
+        self.preview_area.setMaximumHeight(80)
+        self.preview_area.setReadOnly(True)
+        self.preview_area.setStyleSheet(f"""
+            background-color: {self.colors['background']};
+            color: {self.colors['success']};
+            font-family: 'Consolas', 'Monaco', monospace;
+        """)
+        layout.addWidget(self.preview_area)
+    
+    def create_input_widget(self, field: dict) -> QWidget:
+        """Create appropriate input widget for field type"""
+        field_type = field.get('type', 'text')
+        
+        if field_type == 'text':
+            widget = QLineEdit()
+            widget.setPlaceholderText(field.get('placeholder', ''))
+            if 'default' in field:
+                widget.setText(str(field['default']))
+        
+        elif field_type == 'number':
+            widget = QSpinBox()
+            widget.setMinimum(field.get('min', 0))
+            widget.setMaximum(field.get('max', 999999))
+            widget.setValue(field.get('default', 0))
+        
+        elif field_type == 'select':
+            widget = QComboBox()
+            widget.addItems(field.get('options', []))
+            widget.setEditable(False)
+        
+        elif field_type == 'multiselect':
+            # Use text with comma separation for multiselect
+            widget = QLineEdit()
+            widget.setPlaceholderText("Select: " + ", ".join(field.get('options', [])))
+        
+        elif field_type == 'checkbox':
+            widget = QCheckBox()
+            widget.setChecked(field.get('default', False))
+        
+        elif field_type == 'file':
+            widget = FileSelector(field.get('default', ''))
+        
+        else:
+            widget = QLineEdit()
+        
+        return widget
+    
+    def get_field_values(self) -> dict:
+        """Collect all field values"""
+        values = {}
+        for name, widget in self.field_widgets.items():
+            if isinstance(widget, QLineEdit):
+                values[name] = widget.text()
+            elif isinstance(widget, QSpinBox):
+                values[name] = widget.value()
+            elif isinstance(widget, QComboBox):
+                values[name] = widget.currentText()
+            elif isinstance(widget, QCheckBox):
+                values[name] = widget.isChecked()
+            elif isinstance(widget, FileSelector):
+                values[name] = widget.get_path()
+        return values
+    
+    def reset_fields(self):
+        """Reset all fields to defaults"""
+        for field in self.fields_config:
+            name = field['name']
+            widget = self.field_widgets[name]
+            
+            if isinstance(widget, QLineEdit):
+                widget.setText(field.get('default', ''))
+            elif isinstance(widget, QSpinBox):
+                widget.setValue(field.get('default', 0))
+            elif isinstance(widget, QComboBox):
+                widget.setCurrentIndex(0)
+            elif isinstance(widget, QCheckBox):
+                widget.setChecked(field.get('default', False))
+            elif isinstance(widget, FileSelector):
+                widget.set_path(field.get('default', ''))
+        
+        self.preview_area.clear()
+    
+    def preview_command(self):
+        """Generate and display command preview"""
+        values = self.get_field_values()
+        
+        # Build preview based on tool type
+        preview = self.build_command_preview(values)
+        self.preview_area.setText(preview)
+    
+    def build_command_preview(self, values: dict) -> str:
+        """Build command string for preview - override in subclasses"""
+        # Generic preview - tools should provide specific implementation
+        return f"{self.name.lower()} " + " ".join(f"--{k} {v}" for k, v in values.items() if v)
+    
+    def execute_tool(self):
+        """Validate and execute the tool"""
+        values = self.get_field_values()
+        
+        # Validate required fields
+        for field in self.fields_config:
+            if field.get('required') and not values.get(field['name']):
+                QMessageBox.warning(self, "Validation Error",
+                    f"Required field '{field['label']}' is empty.")
+                return
+        
+        # Confirm execution for dangerous tools
+        if self.name in ['Aircrack-ng', 'SQLMap', 'Metasploit Console']:
+            reply = QMessageBox.question(self, "Confirm Execution",
+                f"You are about to run {self.name}.\n\n"
+                "This tool may cause system changes or network activity.\n"
+                "Continue only if you have proper authorization.",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)
+            
+            if reply != QMessageBox.StandardButton.Yes:
+                return
+        
+        # Execute
+        self.run_callback(values)
+
+
+class FileSelector(QWidget):
+    """Combined file path input with browse button"""
+    
+    def __init__(self, default_path: str = "", parent=None):
+        super().__init__(parent)
+        
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(5)
+        
+        self.path_input = QLineEdit(default_path)
+        layout.addWidget(self.path_input)
+        
+        browse_btn = QPushButton("Browse...")
+        browse_btn.setMaximumWidth(80)
+        browse_btn.clicked.connect(self.browse_file)
+        layout.addWidget(browse_btn)
+    
+    def browse_file(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Select File")
+        if path:
+            self.path_input.setText(path)
+    
+    def get_path(self) -> str:
+        return self.path_input.text()
+    
+    def set_path(self, path: str):
+        self.path_input.setText(path)
+```
+
+#### 6. `gui/terminal_emulator.py` - Terminal Output Panel
+
+```python
+"""
+CyberGuard UI - Terminal Emulator
+Displays command output with syntax highlighting
+"""
+
+import subprocess
+import threading
+from queue import Queue, Empty
+
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit,
+    QPushButton, QLabel, QLineEdit, QMenu
+)
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QTextCursor, QColor, QTextCharFormat, QFont
+
+from gui.styles import get_colors
+
+
+class TerminalWidget(QWidget):
+    """Terminal output panel with command execution"""
+    
+    command_finished = pyqtSignal(int, str)  # return code, output
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.colors = get_colors()
+        self.current_process = None
+        self.output_queue = Queue()
+        self.setup_ui()
+        
+        # Timer for updating output
+        self.update_timer = QTimer()
+        self.update_timer.timeout.connect(self.update_output)
+        self.update_timer.start(50)  # 50ms refresh
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
+        
+        # Header
+        header = QHBoxLayout()
+        
+        title = QLabel("🖥️ Terminal Output")
+        title.setStyleSheet(f"""
+            color: {self.colors['text_primary']};
+            font-weight: bold;
+        """)
+        header.addWidget(title)
+        
+        header.addStretch()
+        
+        # Status indicator
+        self.status_label = QLabel("● Idle")
+        self.status_label.setStyleSheet(f"color: {self.colors['success']};")
+        header.addWidget(self.status_label)
+        
+        # Control buttons
+        self.clear_btn = QPushButton("Clear")
+        self.clear_btn.clicked.connect(self.clear_output)
+        header.addWidget(self.clear_btn)
+        
+        self.stop_btn = QPushButton("⏹ Stop")
+        self.stop_btn.setEnabled(False)
+        self.stop_btn.setObjectName("dangerButton")
+        self.stop_btn.clicked.connect(self.stop_command)
+        header.addWidget(self.stop_btn)
+        
+        layout.addLayout(header)
+        
+        # Output display
+        self.output = QTextEdit()
+        self.output.setReadOnly(True)
+        self.output.setFont(QFont("Consolas", 10))
+        self.output.setStyleSheet(f"""
+            QTextEdit {{
+                background-color: {self.colors['background']};
+                color: {self.colors['text_primary']};
+                border: 1px solid {self.colors['border']};
+                border-radius: 6px;
+                padding: 10px;
+            }}
+        """)
+        
+        # Setup ANSI color support
+        self.setup_ansi_colors()
+        
+        layout.addWidget(self.output)
+        
+        # Quick command bar
+        quick_bar = QHBoxLayout()
+        
+        quick_label = QLabel("Quick:")
+        quick_label.setStyleSheet(f"color: {self.colors['text_secondary']};")
+        quick_bar.addWidget(quick_label)
+        
+        self.quick_cmd = QLineEdit()
+        self.quick_cmd.setPlaceholderText("Type command and press Enter...")
+        self.quick_cmd.returnPressed.connect(self.run_quick_command)
+        quick_bar.addWidget(self.quick_cmd)
+        
+        layout.addLayout(quick_bar)
+        
+        # Context menu
+        self.output.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.output.customContextMenuRequested.connect(self.show_context_menu)
+    
+    def setup_ansi_colors(self):
+        """Setup ANSI color code parsing"""
+        self.ansi_colors = {
+            '30': QColor('#000000'),  # Black
+            '31': QColor(self.colors['danger']),    # Red
+            '32': QColor(self.colors['success']),   # Green
+            '33': QColor(self.colors['warning']),   # Yellow
+            '34': QColor(self.colors['accent']),    # Blue
+            '35': QColor(self.colors['info']),      # Magenta
+            '36': QColor('#39c5cf'),   # Cyan
+            '37': QColor(self.colors['text_primary']),  # White
+        }
+    
+    def execute_command(self, command: str, working_dir: str = None):
+        """Execute a command and display output"""
+        self.append_output(f"\n$ {command}\n", 'command')
+        
+        self.status_label.setText("● Running")
+        self.status_label.setStyleSheet(f"color: {self.colors['warning']};")
+        self.stop_btn.setEnabled(True)
+        
+        def run_in_thread():
+            try:
+                self.current_process = subprocess.Popen(
+                    command,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    cwd=working_dir
+                )
+                
+                for line in iter(self.current_process.stdout.readline, ''):
+                    if line:
+                        self.output_queue.put(('output', line))
+                
+                self.current_process.wait()
+                return_code = self.current_process.returncode
+                
+                self.output_queue.put(('finished', return_code))
+                
+            except Exception as e:
+                self.output_queue.put(('error', str(e)))
+        
+        thread = threading.Thread(target=run_in_thread, daemon=True)
+        thread.start()
+    
+    def update_output(self):
+        """Update output display from queue"""
+        try:
+            while True:
+                msg_type, data = self.output_queue.get_nowait()
+                
+                if msg_type == 'output':
+                    self.append_output(data, 'output')
+                elif msg_type == 'finished':
+                    self.on_command_finished(data)
+                elif msg_type == 'error':
+                    self.append_output(f"\nError: {data}\n", 'error')
+                    
+        except Empty:
+            pass
+    
+    def append_output(self, text: str, style: str = 'output'):
+        """Append text to output with styling"""
+        cursor = self.output.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        
+        format = QTextCharFormat()
+        
+        if style == 'command':
+            format.setForeground(QColor(self.colors['accent']))
+            format.setFontWeight(QFont.Weight.Bold)
+        elif style == 'error':
+            format.setForeground(QColor(self.colors['danger']))
+        elif style == 'success':
+            format.setForeground(QColor(self.colors['success']))
+        else:
+            format.setForeground(QColor(self.colors['text_primary']))
+        
+        cursor.setCharFormat(format)
+        cursor.insertText(text)
+        
+        # Auto-scroll to bottom
+        self.output.setTextCursor(cursor)
+        self.output.ensureCursorVisible()
+    
+    def on_command_finished(self, return_code: int):
+        """Handle command completion"""
+        self.status_label.setText("● Idle")
+        self.status_label.setStyleSheet(f"color: {self.colors['success']};")
+        self.stop_btn.setEnabled(False)
+        
+        if return_code == 0:
+            self.append_output(f"\n✓ Command completed successfully\n", 'success')
+        else:
+            self.append_output(f"\n✗ Command failed (exit code {return_code})\n", 'error')
+        
+        self.current_process = None
+        self.command_finished.emit(return_code, self.output.toPlainText())
+    
+    def stop_command(self):
+        """Terminate running command"""
+        if self.current_process:
+            self.current_process.terminate()
+            self.append_output("\n⚠ Command terminated by user\n", 'warning')
+    
+    def run_quick_command(self):
+        """Execute quick command from input bar"""
+        cmd = self.quick_cmd.text().strip()
+        if cmd:
+            self.execute_command(cmd)
+            self.quick_cmd.clear()
+    
+    def clear_output(self):
+        """Clear terminal output"""
+        self.output.clear()
+    
+    def show_context_menu(self, position):
+        """Show right-click context menu"""
+        menu = QMenu(self)
+        
+        copy_action = menu.addAction("Copy")
+        copy_action.triggered.connect(self.output.copy)
+        
+        select_all = menu.addAction("Select All")
+        select_all.triggered.connect(self.output.selectAll)
+        
+        menu.addSeparator()
+        
+        save_output = menu.addAction("Save Output...")
+        save_output.triggered.connect(self.save_output)
+        
+        menu.exec(self.output.mapToGlobal(position))
+    
+    def save_output(self):
+        """Save terminal output to file"""
+        from PyQt6.QtWidgets import QFileDialog
+        
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save Output", "cyberguard_output.txt", "Text Files (*.txt)"
+        )
+        if path:
+            with open(path, 'w') as f:
+                f.write(self.output.toPlainText())
+```
+
+#### 7. `tools/base_tool.py` - Base Tool Class
+
+```python
+"""
+CyberGuard UI - Base Tool Class
+Abstract foundation for all security tools
+"""
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Dict, Optional, Callable
+import subprocess
+import threading
+import json
+import os
+
+
+@dataclass
+class ToolParameter:
+    """Definition of a tool parameter"""
+    name: str
+    label: str
+    param_type: str  # 'string', 'integer', 'boolean', 'choice', 'file', 'list'
+    required: bool = False
+    default: any = None
+    description: str = ""
+    choices: List[str] = None
+    validation_regex: str = None
+    sensitive: bool = False  # Mask in logs (passwords, keys)
+
+
+@dataclass
+class ToolResult:
+    """Result of tool execution"""
+    success: bool
+    return_code: int
+    stdout: str
+    stderr: str
+    parsed_output: Dict = None
+    output_files: List[str] = None
+    execution_time: float = 0.0
+
+
+class BaseSecurityTool(ABC):
+    """Abstract base class for all security tools"""
+    
+    def __init__(self):
+        self.name = self.__class__.__name__
+        self.description = ""
+        self.version = "unknown"
+        self.category = "Uncategorized"
+        self.risk_level = "low"  # low, medium, high, critical
+        self.requires_root = False
+        self.parameters: List[ToolParameter] = []
+        self._callbacks: List[Callable] = []
+    
+    @abstractmethod
+    def build_command(self, params: Dict) -> List[str]:
+        """Build command-line arguments from parameters"""
+        pass
+    
+    @abstractmethod
+    def parse_output(self, stdout: str, stderr: str) -> Dict:
+        """Parse tool output into structured data"""
+        pass
+    
+    def validate_parameters(self, params: Dict) -> tuple[bool, str]:
+        """Validate input parameters"""
+        for param in self.parameters:
+            if param.required and not params.get(param.name):
+                return False, f"Required parameter '{param.label}' is missing"
+            
+            value = params.get(param.name)
+            if value and param.validation_regex:
+                import re
+                if not re.match(param.validation_regex, str(value)):
+                    return False, f"Invalid format for '{param.label}'"
+        
+        return True, ""
+    
+    def execute(self, params: Dict, 
+                output_callback: Callable[[str], None] = None,
+                progress_callback: Callable[[int], None] = None) -> ToolResult:
+        """
+        Execute the tool with given parameters
+        
+        Args:
+            params: Parameter dictionary
+            output_callback: Called with each line of output
+            progress_callback: Called with progress percentage
+        
+        Returns:
+            ToolResult with execution results
+        """
+        import time
+        
+        # Validate
+        valid, error = self.validate_parameters(params)
+        if not valid:
+            return ToolResult(False, -1, "", error)
+        
+        # Build command
+        cmd = self.build_command(params)
+        
+        # Check root requirement
+        if self.requires_root and os.geteuid() != 0:
+            cmd = ['sudo'] + cmd
+        
+        # Execute
+        start_time = time.time()
+        
+        try:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+                universal_newlines=True
+            )
+            
+            stdout_lines = []
+            stderr_lines = []
+            
+            # Stream output
+            while True:
+                stdout_line = process.stdout.readline()
+                stderr_line = process.stderr.readline()
+                
+                if stdout_line:
+                    stdout_lines.append(stdout_line)
+                    if output_callback:
+                        output_callback(stdout_line)
+                
+                if stderr_line:
+                    stderr_lines.append(stderr_line)
+                    if output_callback:
+                        output_callback(f"[stderr] {stderr_line}")
+                
+                if process.poll() is not None and not stdout_line and not stderr_line:
+                    break
+            
+            process.wait()
+            execution_time = time.time() - start_time
+            
+            stdout = ''.join(stdout_lines)
+            stderr = ''.join(stderr_lines)
+            
+            # Parse structured output
+            parsed = self.parse_output(stdout, stderr)
+            
+            return ToolResult(
+                success=process.returncode == 0,
+                return_code=process.returncode,
+                stdout=stdout,
+                stderr=stderr,
+                parsed_output=parsed,
+                execution_time=execution_time
+            )
+            
+        except Exception as e:
+            return ToolResult(False, -1, "", str(e))
+    
+    def get_documentation(self) -> str:
+        """Get tool documentation"""
+        docs = f"""
+# {self.name}
+
+{self.description}
+
+**Category:** {self.category}
+**Risk Level:** {self.risk_level}
+**Requires Root:** {'Yes' if self.requires_root else 'No'}
+
+## Parameters
+"""
+        for param in self.parameters:
+            req = " (required)" if param.required else ""
+            default = f" [default: {param.default}]" if param.default is not None else ""
+            docs += f"\n- **{param.label}** (`{param.param_type}`){req}{default}\n"
+            docs += f"  {param.description}\n"
+        
+        return docs
+    
+    def to_dict(self) -> Dict:
+        """Serialize tool definition"""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'category': self.category,
+            'risk_level': self.risk_level,
+            'requires_root': self.requires_root,
+            'parameters': [
+                {
+                    'name': p.name,
+                    'label': p.label,
+                    'type': p.param_type,
+                    'required': p.required,
+                    'default': p.default,
+                    'description': p.description,
+                    'choices': p.choices
+                }
+                for p in self.parameters
+            ]
+        }
+```
+
+### Installation & Usage
+
+#### Setup Script (`install.sh`)
+
+```bash
+#!/bin/bash
+# CyberGuard UI Installation Script for Kali Linux
+
+set -e
+
+echo "🔒 CyberGuard UI Installer"
+echo "=========================="
+
+# Check if running on Kali
+if ! grep -qi "kali" /etc/os-release 2>/dev/null; then
+    echo "⚠️  Warning: This tool is designed for Kali Linux"
+    read -p "Continue anyway? (y/N) " -n 1 -r
+    echo
+    [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
+fi
+
+# Update system
+echo "📦 Updating package lists..."
+sudo apt update
+
+# Install dependencies
+echo "🔧 Installing dependencies..."
+sudo apt install -y \
+    python3-pip \
+    python3-pyqt6 \
+    python3-pyqt6.qtsvg \
+    nmap \
+    masscan \
+    aircrack-ng \
+    wifite \
+    sqlmap \
+    metasploit-framework \
+    autopsy \
+    binwalk \
+    theharvester \
+    recon-ng
+
+# Install Python packages
+echo "🐍 Installing Python packages..."
+pip3 install --user -r requirements.txt
+
+# Create desktop entry
+echo "🖥️  Creating desktop entry..."
+cat > ~/.local/share/applications/cyberguard.desktop << EOF
+[Desktop Entry]
+Name=CyberGuard UI
+Comment=Kali Linux Security Tools GUI
+Exec=$(pwd)/main.py
+Icon=$(pwd)/assets/icons/cyberguard.png
+Type=Application
+Terminal=false
+Categories=System;Security;
+EOF
+
+# Make executable
+chmod +x main.py
+
+echo ""
+echo "✅ Installation complete!"
+echo "   Run: python3 main.py"
+echo "   Or search 'CyberGuard UI' in applications"
+```
+
+### Key Features for Beginners
+
+| Feature | Benefit |
+|---------|---------|
+| **Visual Parameter Forms** | No need to memorize command flags |
+| **Command Preview** | See exactly what will execute before running |
+| **Contextual Help** | Built-in descriptions for every option |
+| **Safety Warnings** | Confirmation dialogs for dangerous operations |
+| **Real-time Output** | Watch tools run with color-coded terminal |
+| **Progress Indicators** | Know when long scans will complete |
+
+### Running the Application
+
+```bash
+# Clone and setup
+git clone https://github.com/yourusername/cyberguard-ui.git
+cd cyberguard-ui
+chmod +x install.sh
+./install.sh
+
+# Run
+python3 main.py
+```
+
+This project provides a professional, educational interface that helps beginners learn Kali Linux tools while maintaining the power and flexibility of the command line. The modular architecture makes it easy to add new tools as you advance in your cybersecurity journey.
